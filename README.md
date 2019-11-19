@@ -2,22 +2,22 @@
 
 Bibliotecas usadas no codigo:
 
-socket.
+socket
 
-sys.
+sys
 
-json.
+json
 
-tinydb.
+tinydb
 
-random.
+random
 
-threading.
+threading
 
-time.
+time
 
-_thread.
+_thread
 
-pickle.
+pickle
 
-select.
+select
