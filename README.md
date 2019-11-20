@@ -21,3 +21,7 @@ _thread
 pickle
 
 select
+
+Upload de imagens:
+
+https://www.w3schools.com/php/php_file_upload.asp
