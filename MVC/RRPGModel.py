@@ -138,9 +138,7 @@ class Usuario:
 
 class Ficha:
 	
-	__Fichas = {}
-	
-	def __init__(self, nome, raca, classe, nivel, vida, ca, deslc, antec, forc, dex, cons, intl, sab, car):
+	def __init__(self, nome, raca, classe, nivel, vida, ca, deslc, antec, forc, dex, cons, intl, sab, car, equip, info, ataq, peri, test):
 		self.__Nome = nome
 		self.__Raca = raca
 		self.__Classe = classe
@@ -155,11 +153,11 @@ class Ficha:
 		self.__Inteligencia = intl
 		self.__Sabedoria = sab
 		self.__Carisma = car
-		self.__Equipamento = None
-		self.__Text = None
-		self.__Ataques = None
-		self.__Pericias = None
-		self.__Testes = None
+		self.__Equipamento = equip
+		self.__Text = info
+		self.__Ataques = ataq
+		self.__Pericias = peri
+		self.__Testes = test
 		
 	@staticmethod
 	def Criar(F):
@@ -260,6 +258,21 @@ class Ficha:
 	@property
 	def Carisma(self):
 		return self._Carisma
+	@property
+	def Equipamento(self):
+		return self._Equipamento
+	@property
+	def InformacaoPersonagem(self):
+		return self._Text
+	@property
+	def Ataque(self):
+		return self._Ataques
+	@property
+	def Pericia(self):
+		return self._Pericias
+	@property
+	def Teste(self):
+		return self._Testes
 		
 class RolagemdeDados:
 	def __init__(self):
