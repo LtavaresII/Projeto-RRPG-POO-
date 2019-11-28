@@ -27,22 +27,15 @@ class Perfil(Usuario):
 		
 		
 class Sala:
-	
-	__Salas = {}
-	
 	def __init__(self, nome):
 		self.__Nome = nome
 		self.__Resumo = text
-		self.__Capa = capa
 	
 	def Criar(S):
 		l = [S]
 		with  TinyDB('Salas.json') as db:
 			for x in l:
 				db.insert(x.toDict())
-	
-	@staticmethod	
-	def Convidar(self):
 		
 	@staticmethod
 	def Entrar(self):
@@ -65,10 +58,6 @@ class Sala:
 			Q = Query()
 			l = db.update({'__Resumo' : text}, Q.__Nome == nome)
 		
-    @staticmethod
-	def MudarCapa(capa):
-		with open('Capa.png', 'wb') as arq:
-		
 	def toDict(self):
 		s = json.dumps(self, cls=MyEncoder)
 		return json.loads(s)
@@ -85,8 +74,3 @@ class Sala:
 	@property
 	def Resumo(self):
 		return self.__Resumo
-		
-	@property
-	def Capa(self):
-		return self.__Capa
-		

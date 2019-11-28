@@ -1,4 +1,4 @@
-from Controller import Controller
+from Controller import ControllerC, ControllerS, ControllerL, ControllerTS, ControllerF
 
 if __name__ == "__main__":
-	CU = ControllerU()
+	CTS = ControllerTS()

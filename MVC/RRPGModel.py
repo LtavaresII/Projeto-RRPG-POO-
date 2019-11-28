@@ -20,19 +20,11 @@ class MyEncoder(json.JSONEncoder):
 	@staticmethod
 	def decode(d):
 		if d['tipo'] == 'Usuario':
-			return Usuario(d['PNome'],d['SNome'],d['Email'],d['Senha'],d['SenhaC'],d['Nick'],d['Acesso'])
-		if d['tipo'] == 'Email':
-			return Email(d['Email'])
-		if d['tipo'] == 'Senha':
-			return Senha(d['Senha'])
+			return Usuario(d['_PNome'],d['_SNome'],d['_Email'],d['_Senha'],d['_SenhaC'])
 		if d['tipo'] == 'Ficha':
-			return Ficha(d['Nome'],d['Raca'],d['Classe'],d['Nivel'],d['Vida'],d['CA'],d['Deslocamento'],d['Antecedente'],d['Forca'],d['Destreza'],d['Constituicao'],d['Inteligencia'],d['Sabedoria'],d['__Carisma'],d['__Equipamento'],d['Ataques'],d['Pericias'],d['Testes'],d['Text'])
-		if d['tipo'] == 'ND':
-			return ND(d['ND'])
-		if d['tipo'] == 'DPR':
-			return DPR(d['DPR'])
+			return Ficha(d['_Nome'],d['_Raca'],d['_Classe'],d['_Nivel'],d['_Vida'],d['_CA'],d['_Deslocamento'],d['_Antecedente'],d['_Forca'],d['_Destreza'],d['_Constituicao'],d['_Inteligencia'],d['_Sabedoria'],d['_Carisma'],d['_Equipamento'],d['_Ataques'],d['_Pericias'],d['_Testes'],f['_InformacaoPersonagem'])
 		if d['tipo'] == 'Sala':
-			return Sala(d['Nome'],d['Resumo'],d['Capa'])
+			return Sala(d['_Nome'],d['_Usuarios'],d['_PosicaoP'],d['_Fichas'],d['_Chat'])
 					
 class ErroChat(Exception):
 	def __init__(self):
@@ -70,34 +62,34 @@ class ErroCriacaodeSala(Exception):
 	def __init__(self):
 		super().__init__("Entrada incorreta, preencha os campos novamente")
 	
-			
+
 class Usuario:
 	def __init__(self, pnome, snome, email, senha, senhac):
-		self.__PNome = pnome
-		self.__SNome = snome
-		self.__Email = email
-		self.__Senha = senha
-		self.__SenhaC = senhac
-		self.__Nick = None
-		self.__Acesso = None
 		
+		self._PNome = pnome
+		self._SNome = snome
+		self._Email = email
+		self._Senha = senha
+		self._SenhaC = senhac
+
 	@staticmethod
 	def Cadastrar(U):
 		l = [U]
 		with  TinyDB('Usuarios.json') as db:
 			for x in l:
 				db.insert(x.toDict())
-		
+				
 	@staticmethod
 	def Logar(email, senha):
 		with  TinyDB('Usuarios.json') as db:
 			Q = Query()
-			l = db.search(Q.Senha == senha and Q.Email == email)
+			l = db.search(Q._Senha == senha)
 			for x in l:
 				u = Usuario.fromDict(x)
-				Usuario.UpdateAcesso(senha)
-				print('Logado com sucesso')
-				return u
+				if u._Email == email:
+					return True 
+				else:
+					return False
 					
 	def toDict(self):
 		s = json.dumps(self, cls=MyEncoder)
@@ -108,56 +100,48 @@ class Usuario:
 		s = json.dumps(d)
 		return json.loads(s, object_hook=MyEncoder.decode)
 		
-	@staticmethod
-	def UpdateAcesso(senha):
-		pass
-		
-	@property
-	def Acesso(self):
-		return self.__Acesso
-		
 	@property
 	def PNome(self):
-		return self.__PNome
+		return self._PNome
 			
 	@property
 	def SNome(self):
-		return self.__SNome
+		return self._SNome
 		
 	@property
 	def Email(self):
-		return self.__Email
+		return self._Email
 		
 	@property
 	def Senha(self):
-		return self.__Senha
+		return self._Senha
 		
 	@property
 	def SenhaConfirmacao(self):
-		return self.__SenhaC
+		return self._SenhaC
 
 class Ficha:
 	
-	def __init__(self, nome, raca, classe, nivel, vida, ca, deslc, antec, forc, dex, cons, intl, sab, car, equip, info, ataq, peri, test):
-		self.__Nome = nome
-		self.__Raca = raca
-		self.__Classe = classe
-		self.__Nivel = nivel
-		self.__Vida = vida
-		self.__CA = ca
-		self.__Deslocamento = deslc
-		self.__Antecedente = antec
-		self.__Forca = forc
-		self.__Destreza = dex
-		self.__Constituicao = cons
-		self.__Inteligencia = intl
-		self.__Sabedoria = sab
-		self.__Carisma = car
-		self.__Equipamento = equip
-		self.__Text = info
-		self.__Ataques = ataq
-		self.__Pericias = peri
-		self.__Testes = test
+	def __init__(self, nome, raca, classe, nivel, vida, ca, deslc, antec, forc, dex, cons, intl, sab, car, equip, ataq, peri, test, info):
+		self._Nome = nome
+		self._Raca = raca
+		self._Classe = classe
+		self._Nivel = nivel
+		self._Vida = vida
+		self._CA = ca
+		self._Deslocamento = deslc
+		self._Antecedente = antec
+		self._Forca = forc
+		self._Destreza = dex
+		self._Constituicao = cons
+		self._Inteligencia = intl
+		self._Sabedoria = sab
+		self._Carisma = car
+		self._Equipamento = equip
+		self._Ataques = ataq
+		self._Pericias = peri
+		self._Testes = test
+		self._InformacaoPersonagem = info
 		
 	@staticmethod
 	def Criar(F):
@@ -165,12 +149,14 @@ class Ficha:
 		with  TinyDB('Fichas.json') as db:
 			for x in l:
 				db.insert(x.toDict())
-		
+				
 	@staticmethod
-	def Abrir(self):
-		with  TinyDB('dados-exemplo.json') as db:
-			for d in db:
-				print(d)
+	def listar():
+		L = []
+		with TinyDB('Fichas.json') as db:
+			for f in db:
+				L.append(Ficha(f['_Nome'],f['_Raca'],f['_Classe'],f['_Nivel'],f['_Vida'],f['_CA'],f['_Deslocamento'],f['_Antecedente'],f['_Forca'],f['_Destreza'],f['_Constituicao'],f['_Inteligencia'],f['_Sabedoria'],f['_Carisma'],f['_Equipamento'],f['_Ataques'],f['_Pericias'],f['_Testes'],f['_InformacaoPersonagem']))
+		return L
 		
 	def toDict(self):
 		s = json.dumps(self, cls=MyEncoder)
@@ -181,95 +167,78 @@ class Ficha:
 		s = json.dumps(d)
 		return json.loads(s, object_hook=MyEncoder.decode)
 		
-	@staticmethod
-	def Testes(testes):
-		arq = open('Testes.txt','r+')
-		arq.write(testes)
-		self.__Testes = arq
-		arq.close()
-		
-	@staticmethod
-	def Pericias(pericias):
-		arq = open('Pericias.txt','r+')
-		arq.write(pericias)
-		self.__Pericias = arq
-		arq.close()
-		
-	@staticmethod
-	def Ataques(ataques):
-		arq = open('Ataques.txt','r+')
-		arq.write(ataques)
-		self.__Ataques = arq
-		arq.close()
-		
-	@staticmethod
-	def InformacoesPersonagem(text):
-		arq = open('IP2.txt','r+')
-		arq.write(text)
-		self.__Text = arq
-		arq.close()
-	
-	@staticmethod	
-	def Equipamentos(equip):
-		arq = open('Equipamentos.txt','r+')
-		arq.write(equip)
-		self.__Equipamento = arq
-		arq.close()
-		
 	@property
 	def Nome(self):
 		return self._Nome
+		
 	@property
 	def Raca(self):
 		return self._Raca
+		
 	@property
 	def Classe(self):
 		return self._Classe
+		
 	@property
 	def Nivel(self):
 		return self._Nivel
+		
 	@property
 	def Vida(self):
 		return self._Vida
+		
 	@property
 	def CA(self):
 		return self._CA
+		
 	@property
 	def Deslocamento(self):
 		return self._Deslocamento
+		
 	@property
 	def Antecedente(self):
 		return self._Antecedente 
+		
 	@property
 	def Forca(self):
 		return self._Forca
+		
 	@property
 	def Destreza(self):
 		return self._Destreza
+		
 	@property
 	def Constituicao(self):
 		return self._Constituicao
+		
 	@property
 	def Inteligencia(self):
 		return self._Inteligencia
+		
 	@property
 	def Sabedoria(self):
 		return self._Sabedoria
+		
 	@property
 	def Carisma(self):
 		return self._Carisma
+		
 	@property
 	def Equipamento(self):
 		return self._Equipamento
+		
 	@property
 	def InformacaoPersonagem(self):
-		return self._Text
+		return self._InformacaoPersonagem
+		
 	@property
 	def Ataque(self):
 		return self._Ataques
+		
 	@property
 	def Pericia(self):
 		return self._Pericias
+		
 	@property
 	def Teste(self):
 		return self._Testes
@@ -278,13 +247,13 @@ class RolagemdeDados:
 	def __init__(self):
 		pass
 		
-	@staticmethod	
+	@staticmethod
 	def RolarDados(ND, DPR):
 		soma = 0
 		i = 0
 		dado = []
 		if ND > 0 and (DPR == 4 or DPR == 6 or DPR == 8 or DPR == 10 or DPR ==12 or DPR ==20):
-			
+				
 			for x in range(ND):
 				
 				dado.append(random.randint(1,DPR))
@@ -294,6 +263,47 @@ class RolagemdeDados:
 		else:
 			raise ErroComandoInvalido('Nao existe esse dados')
 			
+	@staticmethod
+	def fromDict(d):
+		s = json.dumps(d)
+		return json.loads(s, object_hook = MyEncoder.decode)
+
+class Sala:
+	def __init__(self, nome):
+		self._Nome = nome
+		self._Usuarios = []
+		self._PosicaoP = []
+		self._Fichas = []
+		self._Chat = []
+	
+	@staticmethod
+	def Criar(S):
+		if S._Nome !="":
+			with TinyDB('Salas.json') as db:
+				l = [S]
+				for x in l:
+					db.insert(x.toDict())		
+	@staticmethod
+	def listar():
+		L = []
+		with TinyDB('Salas.json') as db:
+			for s in db:
+				L.append(Sala(s['_Nome']))
+		return L
+		
+	@staticmethod
+	def Abrir(nome):
+		L = []
+		with  TinyDB('Salas.json') as db:
+			Q = Query()
+			l = db.search(Q._Nome == nome)
+			for x in l:
+				L.append(Sala(x['_Nome']))
+		return L
+	
+	def __repr__(self):
+		return 'Sala({0})'.format(self._Nome)
+		
 	def toDict(self):
 		s = json.dumps(self, cls=MyEncoder)
 		return json.loads(s)
@@ -302,3 +312,34 @@ class RolagemdeDados:
 	def fromDict(d):
 		s = json.dumps(d)
 		return json.loads(s, object_hook=MyEncoder.decode)
+        
+	@property
+	def Nome(self):
+		return self._Nome
+				
+	@staticmethod
+	def AdicionarPosicao(p, nome):
+		with TinyDB('Salas.json') as db:
+			Q = Query()
+			l = db.update({'_PosicaoP': p }, Q._Nome == nome)
+			for x in l:
+				db.insert(x.toDict())
+	
+	@staticmethod
+	def AbrirPosicao(nome):
+		L = []
+		with TinyDB('Salas.json') as db:
+			Q = Query()
+			l = db.search(Q._Nome == nome)
+			for x in l:
+				L.append(Sala(x['_PosicaoP']))
+		return L
+		
+	@staticmethod
+	def AdicionarUsuarios():
+		pass
+			
+	@staticmethod
+	def AdicionarFichas():
+		pass
+			
